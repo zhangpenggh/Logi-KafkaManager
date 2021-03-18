@@ -1,5 +1,7 @@
 package com.xiaojukeji.kafka.manager.monitor.common.utils;
 
+import com.alibaba.fastjson.JSONObject;
+import com.xiaojukeji.kafka.manager.common.entity.pojo.AlertStrategyDO;
 import com.xiaojukeji.kafka.manager.monitor.common.entry.dto.*;
 import com.xiaojukeji.kafka.manager.common.utils.ListUtils;
 import com.xiaojukeji.kafka.manager.monitor.common.entry.*;
@@ -39,6 +41,7 @@ public class CommonConverter {
             strategyFilter.setTkey(elem.getTkey());
             strategyFilter.setTopt(elem.getTopt());
             strategyFilter.setTval(ListUtils.strList2String(elem.getTval()));
+            strategyFilter.setClusterIdentification(elem.getClusterIdentification());
             strategy.getStrategyFilterList().add(strategyFilter);
         }
 
@@ -80,6 +83,7 @@ public class CommonConverter {
             strategyFilter.setTkey(elem.getTkey());
             strategyFilter.setTopt(elem.getTopt());
             strategyFilter.setTval(ListUtils.string2StrList(elem.getTval()));
+            strategyFilter.setClusterIdentification(elem.getClusterIdentification());
             monitorRuleDTO.getStrategyFilterList().add(strategyFilter);
         }
 
@@ -101,5 +105,31 @@ public class CommonConverter {
         silence.setEndTime(monitorSilenceDTO.getEndTime());
         silence.setDescription(monitorSilenceDTO.getDescription());
         return silence;
+    }
+
+    public static AlertStrategyDO convert2StrategyDO(Strategy strategy) {
+        AlertStrategyDO alertStrategyDO = new AlertStrategyDO();
+        alertStrategyDO.setId(strategy.getId());
+        alertStrategyDO.setName(strategy.getName());
+        alertStrategyDO.setPriority(strategy.getPriority());
+        alertStrategyDO.setPeriodDaysOfWeek(strategy.getPeriodDaysOfWeek());
+        alertStrategyDO.setPeriodHoursOfDay(strategy.getPeriodHoursOfDay());
+        alertStrategyDO.setStrategyActionList(JSONObject.toJSONString(strategy.getStrategyActionList()));
+        alertStrategyDO.setStrategyExpressionList(JSONObject.toJSONString(strategy.getStrategyExpressionList()));
+        alertStrategyDO.setStrategyFilterList(JSONObject.toJSONString(strategy.getStrategyFilterList()));
+        return alertStrategyDO;
+    }
+
+    public static Strategy convert2Strategy(AlertStrategyDO alertStrategyDO1) {
+        Strategy strategy = new Strategy();
+        strategy.setId(alertStrategyDO1.getId());
+        strategy.setName(alertStrategyDO1.getName());
+        strategy.setPriority(alertStrategyDO1.getPriority());
+        strategy.setPeriodDaysOfWeek(alertStrategyDO1.getPeriodDaysOfWeek());
+        strategy.setPeriodHoursOfDay(alertStrategyDO1.getPeriodHoursOfDay());
+        strategy.setStrategyActionList(JSONObject.parseArray(alertStrategyDO1.getStrategyActionList(), StrategyAction.class));
+        strategy.setStrategyExpressionList(JSONObject.parseArray(alertStrategyDO1.getStrategyExpressionList(),StrategyExpression.class));
+        strategy.setStrategyFilterList(JSONObject.parseArray(alertStrategyDO1.getStrategyFilterList(), StrategyFilter.class));
+        return strategy;
     }
 }

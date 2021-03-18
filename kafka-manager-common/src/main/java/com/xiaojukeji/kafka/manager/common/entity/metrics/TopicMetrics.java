@@ -11,6 +11,8 @@ public class TopicMetrics extends BaseMetrics {
 
     private Long clusterId;
 
+    private String clusterName;
+
     private String topicName;
 
     private List<BrokerMetrics> brokerMetricsList;
@@ -64,5 +66,13 @@ public class TopicMetrics extends BaseMetrics {
                 ", topicName='" + topicName + '\'' +
                 ", metricsMap=" + metricsMap +
                 '}';
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

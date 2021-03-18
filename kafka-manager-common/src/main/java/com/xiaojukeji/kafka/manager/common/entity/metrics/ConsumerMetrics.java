@@ -11,6 +11,8 @@ import java.util.Map;
 public class ConsumerMetrics {
     private Long clusterId;
 
+    private String clusterName;
+
     private String topicName;
 
     private String consumerGroup;
@@ -102,5 +104,13 @@ public class ConsumerMetrics {
                 ", consumeOffsetMap=" + consumeOffsetMap +
                 ", timestampUnitMs=" + timestampUnitMs +
                 '}';
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

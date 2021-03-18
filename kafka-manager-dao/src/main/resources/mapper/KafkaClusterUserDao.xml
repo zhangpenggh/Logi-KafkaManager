@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="KafkaClusterUserDao">
+    <resultMap id="KafkaCLusterUserMap" type="com.xiaojukeji.kafka.manager.common.entity.pojo.KafkaClusterUserDO">
+        <id column="id"                 property="id" />
+        <result column="create_time"    property="createTime" />
+        <result column="app_id"         property="appId" />
+        <result column="cluster_id"         property="clusterId" />
+        <result column="password"       property="password" />
+    </resultMap>
+
+    <insert id="insert" parameterType="com.xiaojukeji.kafka.manager.common.entity.pojo.KafkaClusterUserDO">
+      INSERT INTO kafka_cluster_user
+        (app_id, cluster_id, password )
+      VALUES
+        (#{appId}, #{clusterId}, #{password})
+    </insert>
+
+    <select id="selectByAppCluster" parameterType="java.util.Map" resultMap="KafkaCLusterUserMap">
+        SELECT * FROM kafka_cluster_user
+        where app_id = #{appId} and cluster_id = #{clusterId}
+    </select>
+
+</mapper>

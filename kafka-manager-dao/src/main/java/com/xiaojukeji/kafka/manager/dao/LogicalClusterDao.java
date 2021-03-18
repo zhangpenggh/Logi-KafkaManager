@@ -17,6 +17,8 @@ public interface LogicalClusterDao {
 
     LogicalClusterDO getById(Long id);
 
+    LogicalClusterDao getByIdentity(String identity);
+
     List<LogicalClusterDO> getByClusterId(Long clusterId);
 
     List<LogicalClusterDO> listAll();

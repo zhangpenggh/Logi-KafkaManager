@@ -67,9 +67,9 @@ export const showEditModal = (record?: IAppItem, from?: string, isDisabled?: boo
         customFormItem: <StaffSelect isDisabled={isDisabled} />,
         rules: [{
           required: isDisabled ? false : true,
-          message: '请选择负责人（至少两人）',
+          message: '请选择负责人（至少1人）',
           validator: (rule: any, value: []) => {
-            if (value.length < 2) {
+            if (value.length < 1) {
               return false;
             }
             return true;
@@ -81,11 +81,23 @@ export const showEditModal = (record?: IAppItem, from?: string, isDisabled?: boo
         type: 'text_area',
         rules: [{ required: isDisabled ? false : true, message: '请输入描述' }],
         attrs: { disabled: isDisabled },
-      },
+      }, {
+         key: 'properties',
+         label: '属性',
+         type: 'text_area',
+         rules: [{ required: isDisabled ? false : true, message: '请输入属性' }],
+         attrs: { disabled: isDisabled,
+            placeholder: `{
+                "group":"groupName",
+                "groupPrefix":"groupPrefix"
+                }`,
+
+          },
+       },
     ],
     formData: record,
     visible: true,
-    title: isDisabled ? '详情' : record ? '编辑' : <div><span>应用申请</span><a className='applicationDocument' href="https://github.com/didi/Logi-KafkaManager/blob/master/docs/user_guide/resource_apply.md" target='_blank'>资源申请文档</a></div>,
+    title: isDisabled ? '详情' : record ? '编辑' : <div><span>应用申请</span></div>,
     // customRenderElement: isDisabled ? '' : record ? '' : <span className="tips">集群资源充足时，预计1分钟自动审批通过</span>,
     isWaitting: true,
     onSubmit: (value: IAppItem) => {
@@ -126,7 +138,7 @@ const operateApp = (isEdit: boolean, value: IAppItem, record?: IAppItem, from?: 
   if (value.principalList && value.principalList.length) {
     principals = value.principalList.join(',');
   }
-  params.extensions = JSON.stringify({ principals, idc: value.idc, name: value.name });
+  params.extensions = JSON.stringify({ principals, idc: value.idc, name: value.name, properties: value.properties });
   let modifyParams = {};
   if (isEdit) {
     modifyParams = {
@@ -134,6 +146,7 @@ const operateApp = (isEdit: boolean, value: IAppItem, record?: IAppItem, from?: 
       description: value.description,
       name: value.name,
       principals,
+      properties: value.properties
     };
   }
   return isEdit ? app.modfiyApplication(modifyParams, from) : app.applyApplication(params);

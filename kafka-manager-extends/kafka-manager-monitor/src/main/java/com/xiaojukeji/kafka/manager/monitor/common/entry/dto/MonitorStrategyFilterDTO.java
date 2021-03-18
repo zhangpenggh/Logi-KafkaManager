@@ -14,6 +14,8 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 @ApiModel(description = "指标过滤规则")
 public class MonitorStrategyFilterDTO {
+    private String clusterIdentification;
+
     @ApiModelProperty(value = "指标")
     private String tkey;
 
@@ -22,6 +24,9 @@ public class MonitorStrategyFilterDTO {
 
     @ApiModelProperty(value = "值")
     private List<String> tval;
+
+    public MonitorStrategyFilterDTO() {
+    }
 
     public String getTkey() {
         return tkey;
@@ -63,5 +68,13 @@ public class MonitorStrategyFilterDTO {
             return false;
         }
         return true;
+    }
+
+    public String getClusterIdentification() {
+        return clusterIdentification;
+    }
+
+    public void setClusterIdentification(String clusterIdentification) {
+        this.clusterIdentification = clusterIdentification;
     }
 }

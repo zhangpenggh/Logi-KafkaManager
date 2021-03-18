@@ -57,10 +57,10 @@ public class MonitorStrategyActionDTO {
     }
 
     public boolean paramLegal() {
-        if (ValidateUtils.isEmptyList(notifyGroup)
-                || ValidateUtils.isBlank(converge)) {
-            return false;
-        }
+//        if (ValidateUtils.isEmptyList(notifyGroup)
+//                || ValidateUtils.isBlank(converge)) {
+//            return false;
+//        }
         callback = ValidateUtils.isNull(callback)? "": callback;
         return true;
     }

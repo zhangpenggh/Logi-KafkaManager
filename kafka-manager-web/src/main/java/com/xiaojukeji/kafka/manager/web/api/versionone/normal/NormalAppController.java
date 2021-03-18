@@ -81,6 +81,7 @@ public class NormalAppController {
         }
 
         AppDO appDO = appService.getAppByUserAndId(appId, SpringTool.getUserName());
+
         if (appDO == null) {
             return Result.buildFrom(ResultStatus.USER_WITHOUT_AUTHORITY);
         }

@@ -216,6 +216,7 @@ export interface IAppItemBase {
   principals: string;
   status: number;
   password: string;
+  properties: string;
 }
 
 export interface IAppItem extends IAppItemBase {

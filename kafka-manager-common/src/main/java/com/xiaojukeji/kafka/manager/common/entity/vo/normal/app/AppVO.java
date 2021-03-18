@@ -24,6 +24,9 @@ public class AppVO {
     @ApiModelProperty(value="App描述")
     private String description;
 
+    @ApiModelProperty(value = "App属性")
+    private String properties;
+
     @ApiModelProperty(value="App负责人")
     private String principals;
 
@@ -84,6 +87,15 @@ public class AppVO {
                 ", applicant='" + applicant + '\'' +
                 ", description='" + description + '\'' +
                 ", principals='" + principals + '\'' +
+                ", properties='" + properties + '\'' +
                 '}';
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
     }
 }

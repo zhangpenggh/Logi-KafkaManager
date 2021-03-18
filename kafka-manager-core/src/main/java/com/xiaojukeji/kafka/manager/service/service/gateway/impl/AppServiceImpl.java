@@ -81,6 +81,7 @@ public class AppServiceImpl implements AppService {
             content.put("password", appDO.getPassword());
             content.put("principals", appDO.getPrincipals());
             content.put("description", appDO.getDescription());
+            content.put("properties", appDO.getProperties());
             operateRecordService.insert(operator, ModuleEnum.APP, appDO.getName(), OperateEnum.ADD, content);
         } catch (DuplicateKeyException e) {
             LOGGER.error("class=AppServiceImpl||method=addApp||errMsg={}||appDO={}|", e.getMessage(), appDO, e);
@@ -146,6 +147,7 @@ public class AppServiceImpl implements AppService {
             appDO.setName(dto.getName());
             appDO.setPrincipals(dto.getPrincipals());
             appDO.setDescription(dto.getDescription());
+            appDO.setProperties(dto.getProperties());
 
             if (appDao.updateById(appDO) > 0) {
                 Map<String, String> content = new HashMap<>();
@@ -153,6 +155,7 @@ public class AppServiceImpl implements AppService {
                 content.put("name", appDO.getName());
                 content.put("principals", appDO.getPrincipals());
                 content.put("description", appDO.getDescription());
+                content.put("properties", appDO.getProperties());
                 operateRecordService.insert(operator, ModuleEnum.APP, appDO.getName(), OperateEnum.EDIT, content);
                 return ResultStatus.SUCCESS;
             }

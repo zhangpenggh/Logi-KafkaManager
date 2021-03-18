@@ -4,17 +4,28 @@ import com.alibaba.fastjson.JSONObject;
 import com.xiaojukeji.kafka.manager.common.bizenum.ModuleEnum;
 import com.xiaojukeji.kafka.manager.common.bizenum.OperateEnum;
 import com.xiaojukeji.kafka.manager.common.bizenum.OperationStatusEnum;
+import com.xiaojukeji.kafka.manager.common.bizenum.TopicAuthorityEnum;
+import com.xiaojukeji.kafka.manager.common.entity.pojo.AppPropertiesDO;
+import com.xiaojukeji.kafka.manager.common.entity.pojo.ClusterDO;
+import com.xiaojukeji.kafka.manager.common.entity.pojo.KafkaClusterUserDO;
 import com.xiaojukeji.kafka.manager.common.entity.pojo.OperateRecordDO;
+import com.xiaojukeji.kafka.manager.common.entity.pojo.gateway.AppDO;
 import com.xiaojukeji.kafka.manager.common.entity.pojo.gateway.AuthorityDO;
 import com.xiaojukeji.kafka.manager.common.entity.pojo.gateway.KafkaAclDO;
+import com.xiaojukeji.kafka.manager.dao.KafkaClusterUserDao;
+import com.xiaojukeji.kafka.manager.dao.gateway.AppDao;
 import com.xiaojukeji.kafka.manager.dao.gateway.AuthorityDao;
 import com.xiaojukeji.kafka.manager.common.entity.ao.gateway.TopicQuota;
 import com.xiaojukeji.kafka.manager.common.entity.ResultStatus;
 import com.xiaojukeji.kafka.manager.common.utils.ValidateUtils;
 import com.xiaojukeji.kafka.manager.dao.gateway.KafkaAclDao;
+import com.xiaojukeji.kafka.manager.service.cache.PhysicalClusterMetadataManager;
 import com.xiaojukeji.kafka.manager.service.service.OperateRecordService;
 import com.xiaojukeji.kafka.manager.service.service.gateway.AuthorityService;
 import com.xiaojukeji.kafka.manager.service.service.gateway.QuotaService;
+import com.xiaojukeji.kafka.manager.service.utils.KafkaAclUtils;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -45,6 +56,12 @@ public class AuthorityServiceImpl implements AuthorityService {
     @Autowired
     private OperateRecordService operateRecordService;
 
+    @Autowired
+    private AppDao appDao;
+
+    @Autowired
+    private KafkaClusterUserDao kafkaClusterUserDao;
+
     @Override
     public int addAuthority(AuthorityDO authorityDO) {
         int result = 0;
@@ -66,6 +83,35 @@ public class AuthorityServiceImpl implements AuthorityService {
             }
             if (authorityDao.insert(authorityDO) < 1) {
                 return result;
+            }
+            Long physicalClusterId = authorityDO.getClusterId();
+            ClusterDO clusterDO = PhysicalClusterMetadataManager.getClusterFromCache(physicalClusterId);
+            if (StringUtils.isNotEmpty(clusterDO.getSecurityProperties())) {
+
+                AppDO appDO = appDao.getByAppId(authorityDO.getAppId());
+                List<KafkaClusterUserDO> kafkaClusterUserDOList = kafkaClusterUserDao.selectByAppCluster(physicalClusterId, appDO.getAppId());
+                if (CollectionUtils.isEmpty(kafkaClusterUserDOList)) {
+                    KafkaAclUtils.createUser(clusterDO.getZookeeper(), appDO.getAppId(), appDO.getPassword());
+                }
+                String appProperties = appDO.getProperties();
+                if (StringUtils.isNotEmpty(appProperties)) {
+                    AppPropertiesDO appPropertiesDO = JSONObject.parseObject(appProperties, AppPropertiesDO.class);
+                    if (authorityDO.getAccess() == TopicAuthorityEnum.READ.getCode() || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
+                        if (StringUtils.isNotEmpty(appPropertiesDO.getGroup())) {
+                            KafkaAclUtils.assignConsumerByGroup(clusterDO.getZookeeper(), appDO.getAppId(), appPropertiesDO.getGroup(), authorityDO.getTopicName());
+                        }
+                        if (StringUtils.isNotEmpty(appPropertiesDO.getGroupPrefix())) {
+                            KafkaAclUtils.assignConsumerByGroupPrefix(clusterDO.getZookeeper(),
+                                    appDO.getAppId(),
+                                    appPropertiesDO.getGroupPrefix(),
+                                    authorityDO.getTopicName());
+                        }
+                    }
+                    if (authorityDO.getAccess() == TopicAuthorityEnum.WRITE.getCode() || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
+                        KafkaAclUtils.assignProducer(clusterDO.getZookeeper(), appDO.getAppId(), authorityDO.getTopicName());
+                    }
+                }
+
             }
             KafkaAclDO kafkaAclDO = new KafkaAclDO();
             kafkaAclDO.setTopicName(authorityDO.getTopicName());

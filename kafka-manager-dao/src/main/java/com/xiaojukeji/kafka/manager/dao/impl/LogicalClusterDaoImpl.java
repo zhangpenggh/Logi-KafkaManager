@@ -42,6 +42,11 @@ public class LogicalClusterDaoImpl implements LogicalClusterDao {
     }
 
     @Override
+    public LogicalClusterDao getByIdentity(String identification) {
+        return sqlSession.selectOne("LogicalClusterDao.getByIdentification", identification);
+    }
+
+    @Override
     public List<LogicalClusterDO> getByClusterId(Long clusterId) {
         return sqlSession.selectList("LogicalClusterDao.getByClusterId", clusterId);
     }

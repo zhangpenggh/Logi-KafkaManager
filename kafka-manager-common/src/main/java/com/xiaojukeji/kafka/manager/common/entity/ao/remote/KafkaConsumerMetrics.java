@@ -9,6 +9,8 @@ import java.util.List;
 public class KafkaConsumerMetrics {
     private Long clusterId;
 
+    private String clusterName;
+
     private String topicName;
 
     private String consumerGroup;
@@ -88,5 +90,13 @@ public class KafkaConsumerMetrics {
                 ", consumeDetailList=" + consumeDetailList +
                 ", createTime=" + createTime +
                 '}';
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

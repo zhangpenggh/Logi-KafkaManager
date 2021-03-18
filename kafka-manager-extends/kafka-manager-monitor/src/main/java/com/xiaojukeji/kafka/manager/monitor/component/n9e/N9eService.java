@@ -23,7 +23,7 @@ import java.util.concurrent.TimeUnit;
  * @author zengqiao
  * @date 20/4/30
  */
-@Service("abstractMonitor")
+//@Service("abstractMonitor")
 public class N9eService extends AbstractMonitorService {
     private static final Logger LOGGER = LoggerFactory.getLogger(N9eService.class);
 

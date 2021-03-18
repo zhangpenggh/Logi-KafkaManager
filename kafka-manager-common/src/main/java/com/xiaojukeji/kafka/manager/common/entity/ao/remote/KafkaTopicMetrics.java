@@ -7,6 +7,8 @@ package com.xiaojukeji.kafka.manager.common.entity.ao.remote;
 public class KafkaTopicMetrics {
     private Long clusterId;
 
+    private String clusterName;
+
     private String topic;
 
     private Integer partitionNum;
@@ -75,5 +77,13 @@ public class KafkaTopicMetrics {
                 ", bytesInPerSec=" + bytesInPerSec +
                 ", timestamp=" + timestamp +
                 '}';
+    }
+
+    public String getClusterName() {
+        return clusterName;
+    }
+
+    public void setClusterName(String clusterName) {
+        this.clusterName = clusterName;
     }
 }

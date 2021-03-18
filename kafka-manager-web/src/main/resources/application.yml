@@ -11,9 +11,9 @@ spring:
     name: kafkamanager
   datasource:
     kafka-manager:
-      jdbc-url: jdbc:mysql://127.0.0.1:3306/logi_kafka_manager?characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
-      username: admin
-      password: admin
+      jdbc-url: jdbc:mysql://host:port/hq_km_test?characterEncoding=UTF-8&useSSL=false&serverTimezone=GMT%2B8
+      username:
+      password:
       driver-class-name: com.mysql.jdbc.Driver
   main:
     allow-bean-definition-overriding: true
@@ -29,6 +29,9 @@ logging:
   config: classpath:logback-spring.xml
 
 custom:
+  monitor:
+    embedded:
+      enable: true
   idc: cn
   jmx:
     max-conn: 10 # 2.3版本配置不在这个地方生效
@@ -49,15 +52,15 @@ task:
 
 account:
   ldap:
-    enabled: false
-    url: ldap://127.0.0.1:389/
-    basedn: dc=tsign,dc=cn
+    enabled: true
+    url: ldap://host:port/
+    basedn: ou=people,dc=github,dc=com
     factory: com.sun.jndi.ldap.LdapCtxFactory
-    filter: sAMAccountName
+    filter: uid
     security:
       authentication: simple
-      principal: cn=admin,dc=tsign,dc=cn
-      credentials: admin
+      principal: cn=viewer,dc=github,dc=com
+      credentials:
     auth-user-registration: true
     auth-user-registration-role: normal
 

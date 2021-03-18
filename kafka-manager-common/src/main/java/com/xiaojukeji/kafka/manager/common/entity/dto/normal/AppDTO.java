@@ -19,6 +19,9 @@ public class AppDTO {
     @ApiModelProperty(value="App描述")
     private String description;
 
+    @ApiModelProperty(value = "App属性")
+    private String properties;
+
     @ApiModelProperty(value="App负责人")
     private String principals;
 
@@ -72,5 +75,13 @@ public class AppDTO {
             return false;
         }
         return true;
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
     }
 }

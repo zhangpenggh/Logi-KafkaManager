@@ -42,6 +42,10 @@
         SELECT * FROM logical_cluster WHERE id=#{id}
     </select>
 
+    <select id="getByIdentification" parameterType="java.lang.Long" resultMap="LogicalClusterMap">
+        SELECT * FROM logical_cluster WHERE identification=#{identification}
+    </select>
+
     <select id="getByClusterId" parameterType="java.lang.Long" resultMap="LogicalClusterMap">
         SELECT * FROM logical_cluster WHERE cluster_id=#{clusterId}
     </select>

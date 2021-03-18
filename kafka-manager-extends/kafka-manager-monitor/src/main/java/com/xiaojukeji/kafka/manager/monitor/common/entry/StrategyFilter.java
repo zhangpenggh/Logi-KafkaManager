@@ -7,6 +7,8 @@ import java.util.List;
  * @date 20/5/27
  */
 public class StrategyFilter {
+    private String clusterIdentification;
+
     private String tkey;
 
     private String topt;
@@ -53,5 +55,13 @@ public class StrategyFilter {
             return false;
         }
         return true;
+    }
+
+    public String getClusterIdentification() {
+        return clusterIdentification;
+    }
+
+    public void setClusterIdentification(String clusterIdentification) {
+        this.clusterIdentification = clusterIdentification;
     }
 }

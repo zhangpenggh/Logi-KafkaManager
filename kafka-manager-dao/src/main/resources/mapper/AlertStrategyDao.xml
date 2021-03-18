@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="AlertStrategyDao">
+  <resultMap id="AlertStrategyMap" type="com.xiaojukeji.kafka.manager.common.entity.pojo.AlertStrategyDO">
+    <id column="id"                property="id" />
+    <result column="name"    property="name" />
+    <result column="priority"    property="priority" />
+    <result column="period_hours_of_day"        property="periodHoursOfDay" />
+    <result column="period_days_of_week" property="periodDaysOfWeek" />
+    <result column="strategy_expressions"   property="strategyExpressionList" />
+    <result column="strategy_filters"    property="strategyFilterList" />
+    <result column="strategy_actions"    property="strategyActionList" />
+  </resultMap>
+
+  <insert id="insert" parameterType="com.xiaojukeji.kafka.manager.common.entity.pojo.AlertStrategyDO">
+    INSERT INTO alert_strategy
+    (name, priority, period_hours_of_day, period_days_of_week, strategy_expressions,strategy_filters, strategy_actions)
+    VALUES
+    (#{name}, #{priority}, #{periodHoursOfDay}, #{periodDaysOfWeek}, #{strategyExpressionList}, #{strategyFilterList}, #{strategyActionList})
+  </insert>
+  <update id="update" parameterType="com.xiaojukeji.kafka.manager.common.entity.pojo.AlertStrategyDO">
+    UPDATE alert_strategy
+    SET name = #{name},
+    priority = #{priority},
+    period_hours_of_day = #{periodHoursOfDay},
+    period_days_of_week = #{periodDaysOfWeek},
+    strategy_expressions = #{strategyExpressionList},
+    strategy_filters = #{strategyFilterList},
+    strategy_actions = #{strategyActionList}
+    WHERE id = #{id}
+  </update>
+
+  <delete id="delete" parameterType="java.lang.Long">
+    DELETE FROM alert_strategy WHERE id = #{id}
+  </delete>
+
+  <select id="get" parameterType="java.lang.Long" resultMap="AlertStrategyMap">
+    SELECT * FROM alert_strategy WHERE id = #{id}
+  </select>
+
+  <select id="listAll" resultMap="AlertStrategyMap">
+    SELECT * FROM alert_strategy
+  </select>
+
+</mapper>

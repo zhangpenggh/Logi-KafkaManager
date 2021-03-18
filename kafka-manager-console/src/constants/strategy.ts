@@ -12,8 +12,8 @@ export const equalList = [
   { label: '大于', value: '>' },
   { label: '小于', value: '<' },
   { label: '等于', value: '=' },
-  { label: '大于等于', value: '>=' },
-  { label: '小于等于', value: '<=' },
+//   { label: '大于等于', value: '>=' },
+//   { label: '小于等于', value: '<=' },
   { label: '不等于', value: '!=' },
 ];
 
@@ -25,10 +25,10 @@ export const timeList = [
 export const funcList = [
   { label: '周期发生-happen', value: 'happen' },
   { label: '连续发生-all', value: 'all' },
-  { label: '同比变化率-c_avg_rate_abs', value: 'c_avg_rate_abs' },
-  { label: '突增突降值-diff', value: 'diff' },
-  { label: '突增突降率-pdiff', value: 'pdiff' },
-  { label: '求和-sum', value: 'sum' },
+//   { label: '同比变化率-c_avg_rate_abs', value: 'c_avg_rate_abs' },
+//   { label: '突增突降值-diff', value: 'diff' },
+//   { label: '突增突降率-pdiff', value: 'pdiff' },
+//   { label: '求和-sum', value: 'sum' },
 ];
 
 interface IStringArray {

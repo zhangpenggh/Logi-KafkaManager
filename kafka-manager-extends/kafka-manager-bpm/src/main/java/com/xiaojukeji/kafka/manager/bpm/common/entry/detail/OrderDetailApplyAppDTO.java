@@ -13,6 +13,8 @@ public class OrderDetailApplyAppDTO extends AbstractOrderDetailData {
 
     private String principals;
 
+    private String properties;
+
     public String getAppId() {
         return appId;
     }
@@ -53,5 +55,13 @@ public class OrderDetailApplyAppDTO extends AbstractOrderDetailData {
                 ", password='" + password + '\'' +
                 ", principals='" + principals + '\'' +
                 '}';
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
     }
 }

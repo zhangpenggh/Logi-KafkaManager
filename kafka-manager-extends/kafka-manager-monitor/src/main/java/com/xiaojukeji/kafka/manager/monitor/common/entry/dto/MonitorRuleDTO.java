@@ -131,7 +131,7 @@ public class MonitorRuleDTO {
     public boolean paramLegal() {
         if (ValidateUtils.isBlank(appId)
                 || ValidateUtils.isBlank(name)
-                || ValidateUtils.isNull(priority)
+//                || ValidateUtils.isNull(priority)
                 || ValidateUtils.isBlank(periodHoursOfDay)
                 || ValidateUtils.isBlank(periodDaysOfWeek)
                 || ValidateUtils.isEmptyList(strategyExpressionList)

@@ -167,13 +167,6 @@ class RadioIcon extends React.Component<IRadioProps> {
 }
 
 export const xActionFormMap = [{
-  key: 'level',
-  label: '报警级别',
-  type: 'custom',
-  defaultValue: 3,
-  customFormItem: <RadioIcon />,
-  rules: [{ required: true, message: '请输入报警接收组' }],
-}, {
   key: 'alarmPeriod',
   label: '报警周期(分钟)',
   type: 'input_number',
@@ -182,26 +175,11 @@ export const xActionFormMap = [{
     disabled: isDetailPage,
   },
   rules: [{ required: true, message: '请输入报警周期' }],
-}, {
-  key: 'alarmTimes',
-  label: '周期内报警次数',
-  type: 'input_number',
-  attrs: {
-    min: 0,
-    disabled: isDetailPage,
-  },
-  rules: [{ required: true, message: '请输入周期内报警次数' }],
-}, {
-  key: 'acceptGroup',
-  label: '报警接收组',
-  type: 'custom',
-  customFormItem: <AlarmSelect isDisabled={isDetailPage} />,
-  rules: [{ required: true, message: '请输入报警接收组' }],
 },
 {
   key: 'callback',
-  label: '回调地址',
-  rules: [{ required: false, message: '请输入回调地址' }],
+  label: '报警地址（企业微信）',
+  rules: [{ required: false, message: '请输入报警地址(企业微信)' }],
   attrs: { disabled: isDetailPage },
 }] as unknown as IFormSelect[]; // as IFormItem[];
 

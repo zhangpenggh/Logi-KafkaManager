@@ -13,6 +13,8 @@ public class OrderExtensionApplyAppDTO {
 
     private String principals;
 
+    private String properties;
+
     public String getIdc() {
         return idc;
     }
@@ -53,5 +55,13 @@ public class OrderExtensionApplyAppDTO {
                 ", idc='" + idc + '\'' +
                 ", principals='" + principals + '\'' +
                 '}';
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
     }
 }

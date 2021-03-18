@@ -41,6 +41,7 @@ public class AppConverter {
         vo.setPassword(appDO.getPassword());
         vo.setDescription(appDO.getDescription());
         vo.setPrincipals(appDO.getPrincipals());
+        vo.setProperties(appDO.getProperties());
         return vo;
     }
 

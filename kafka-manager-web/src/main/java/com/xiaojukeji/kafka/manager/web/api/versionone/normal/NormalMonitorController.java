@@ -1,5 +1,6 @@
 package com.xiaojukeji.kafka.manager.web.api.versionone.normal;
 
+import com.google.common.collect.Lists;
 import com.xiaojukeji.kafka.manager.common.entity.pojo.gateway.AppDO;
 import com.xiaojukeji.kafka.manager.monitor.common.entry.bizenum.MonitorMetricNameEnum;
 import com.xiaojukeji.kafka.manager.common.constant.Constant;
@@ -51,7 +52,12 @@ public class NormalMonitorController {
     @ResponseBody
     public Result getMonitorEnums() {
         Map<String, Object> data = new HashMap<>(1);
-        data.put("metricNames", JsonUtils.toJson(MonitorMetricNameEnum.class));
+        List<Object> metrics = Lists.newArrayList(
+                JsonUtils.toJson(MonitorMetricNameEnum.CONSUMER_PARTITION_LAG),
+                JsonUtils.toJson(MonitorMetricNameEnum.TOPIC_BYTES_IN),
+                JsonUtils.toJson(MonitorMetricNameEnum.TOPIC_MSG_IN)
+        );
+        data.put("metricNames", metrics);
         return new Result<>(data);
     }
 

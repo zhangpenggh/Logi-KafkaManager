@@ -26,6 +26,8 @@ public class AppDO {
 
     private String description;
 
+    private String properties;
+
     private Date createTime;
 
     private Date modifyTime;
@@ -127,6 +129,7 @@ public class AppDO {
                 ", description='" + description + '\'' +
                 ", createTime=" + createTime +
                 ", modifyTime=" + modifyTime +
+                ", properties=" + properties +
                 '}';
     }
 
@@ -144,5 +147,13 @@ public class AppDO {
 
     public static String generateAppId(Long orderId, String idc) {
         return String.format("appId_%06d_%s", orderId, idc);
+    }
+
+    public String getProperties() {
+        return properties;
+    }
+
+    public void setProperties(String properties) {
+        this.properties = properties;
     }
 }

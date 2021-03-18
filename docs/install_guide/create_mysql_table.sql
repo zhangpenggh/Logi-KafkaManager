@@ -35,6 +35,7 @@ CREATE TABLE `app` (
   `applicant` varchar(64) NOT NULL DEFAULT '' COMMENT '申请人',
   `principals` text COMMENT '应用负责人',
   `description` text COMMENT '应用描述',
+  `properties`  text COMMENT '属性',
   `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
   `modify_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '修改时间',
   PRIMARY KEY (`id`),
@@ -42,6 +43,18 @@ CREATE TABLE `app` (
   UNIQUE KEY `uniq_app_id` (`app_id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='应用信息';
 
+-- DROP TABLE IF EXISTS `app`;
+CREATE TABLE `alert_strategy` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `name` varchar(192) NOT NULL DEFAULT '' COMMENT '名称',
+  `priority` varchar(256) NOT NULL DEFAULT '' COMMENT '级别',
+  `period_hours_of_day` varchar(64) NOT NULL DEFAULT '' COMMENT '生效时间',
+  `period_days_of_week` varchar(64) COMMENT '生效日',
+  `strategy_expressions` text COMMENT '报警策略',
+  `strategy_filters`  text COMMENT '过滤器',
+  `strategy_actions`  text COMMENT '配置发送信息',
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='报警策略表';
 
 --
 -- Table structure for table `authority`
@@ -304,7 +317,15 @@ CREATE TABLE `kafka_user` (
 INSERT INTO app(app_id, name, password, type, applicant, principals, description) VALUES ('dkm_admin', 'KM管理员', 'km_kMl4N8as1Kp0CCY', 1, 'admin', 'admin', 'KM管理员应用-谨慎对外提供');
 INSERT INTO kafka_user(app_id, password, user_type, operation) VALUES ('dkm_admin', 'km_kMl4N8as1Kp0CCY', 1, 0);
 
-
+CREATE TABLE `kafka_cluster_user` (
+  `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
+  `app_id` varchar(128) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '应用id',
+  `password` varchar(256) CHARACTER SET utf8 COLLATE utf8_bin NOT NULL DEFAULT '' COMMENT '密码',
+  `cluster_id` bigint(20)  COMMENT '集群id',
+  `create_time` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `uniq_app_id_cluster_id_password` (`app_id`,`cluster_id`,`password`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8 COMMENT='kafka用户表';
 --
 -- Table structure for table `logical_cluster`
 --

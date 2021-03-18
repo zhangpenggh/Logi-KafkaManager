@@ -1,9 +1,11 @@
 package com.xiaojukeji.kafka.manager.web.api.versionone.normal;
 
+import com.xiaojukeji.kafka.manager.common.bizenum.TopicAuthorityEnum;
 import com.xiaojukeji.kafka.manager.common.constant.Constant;
 import com.xiaojukeji.kafka.manager.common.constant.KafkaMetricsCollections;
 import com.xiaojukeji.kafka.manager.common.entity.Result;
 import com.xiaojukeji.kafka.manager.common.entity.ResultStatus;
+import com.xiaojukeji.kafka.manager.common.entity.ao.topic.MineTopicSummary;
 import com.xiaojukeji.kafka.manager.common.entity.ao.topic.TopicConnection;
 import com.xiaojukeji.kafka.manager.common.entity.ao.topic.TopicPartitionDTO;
 import com.xiaojukeji.kafka.manager.common.entity.dto.normal.TopicDataSampleDTO;
@@ -258,10 +260,26 @@ public class NormalTopicController {
             return Result.buildFrom(ResultStatus.TOPIC_NOT_EXIST);
         }
 
+        List<MineTopicSummary> myTopics = topicManagerService.getMyTopics(SpringTool.getUserName());
+        boolean canRead = false;
+        for (MineTopicSummary mineTopicSummary : myTopics) {
+            if (topicName.equals(mineTopicSummary.getTopicName())
+                    && mineTopicSummary.getLogicalClusterId() == clusterId
+                    && mineTopicSummary.getAccess() > 0
+            ) {
+                canRead = true;
+                break;
+            }
+        }
+        if (!canRead) {
+            return Result.buildFrom(ResultStatus.AUTHORITY_NOT_EXIST);
+        }
+
         List<String> dataList = topicService.fetchTopicData(clusterDO, topicName, reqObj);
         if (ValidateUtils.isNull(dataList)) {
             return Result.buildFrom(ResultStatus.OPERATION_FAILED);
         }
+
         return new Result<>(TopicModelConverter.convert2TopicDataSampleVOList(dataList));
     }
 
