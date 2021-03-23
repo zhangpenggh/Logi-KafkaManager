@@ -1,4 +1,4 @@
-package com.xiaojukeji.kafka.manager.web.api.versionone.rd;
+package com.xiaojukeji.kafka.manager.web.api.versionone.thirdpart;
 
 import com.xiaojukeji.kafka.manager.common.constant.ApiPrefix;
 import com.xiaojukeji.kafka.manager.common.constant.Constant;
@@ -35,13 +35,13 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * @author zengqiao
- * @date 20/5/4
+ * @author zhangpeng
+ * @date 21/3/23
  */
-@Api(tags = "RD-Monitor相关接口(REST)")
+@Api(tags = "开放接口--Monitor相关接口(REST)")
 @RestController
-@RequestMapping(ApiPrefix.API_V1_RD_PREFIX)
-public class RdMonitorController {
+@RequestMapping(ApiPrefix.API_V1_THIRD_PART_PREFIX)
+public class ThirdPartMonitorController {
 
     @Autowired
     private AbstractMonitorService monitorService;
