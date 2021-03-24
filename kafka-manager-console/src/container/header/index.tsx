@@ -68,27 +68,9 @@ export const Header = observer((props: IHeader) => {
     <ul className="kafka-header-menu">
       <li>
         <a
-          href="https://github.com/didi/kafka-manager"
-          target="_blank"
-        >产品介绍
-        </a></li>
-      <li>
-        <a
-          href="https://github.com/didi/kafka-manager/blob/master/docs/user_guide/user_guide_cn.md"
+          href=""
           target="_blank"
         >使用手册
-        </a></li>
-      <li>
-        <a
-          href="https://github.com/didi/kafka-manager/blob/master/docs/install_guide/install_guide_cn.md"
-          target="_blank"
-        >QuickStart
-        </a></li>
-      <li>
-        <a
-          href="https://github.com/didi/kafka-manager/blob/master/docs/user_guide/faq.md"
-          target="_blank"
-        >常见问题
         </a></li>
       <li>
         <Popover placement="left" content={content} trigger="hover">

@@ -29,7 +29,8 @@ public class EmbededMonitorService extends AbstractMonitorService {
     @Override
     public Integer createStrategy(Strategy strategy) {
         AlertStrategyDO alertStrategyDO = CommonConverter.convert2StrategyDO(strategy);
-        return alertStrategyDao.insert(alertStrategyDO);
+        alertStrategyDao.insert(alertStrategyDO);
+        return alertStrategyDO.getId().intValue();
     }
 
     @Override
@@ -59,7 +60,7 @@ public class EmbededMonitorService extends AbstractMonitorService {
             if (logicalClusterDOMap.containsKey(cluster)) {
                 StrategyFilter newFilter = new StrategyFilter();
                 newFilter.setTkey("clusterId");
-                newFilter.setTval(logicalClusterDOMap.get(cluster).getId().toString());
+                newFilter.setTval(logicalClusterDOMap.get(cluster).getClusterId().toString());
                 strategy.getStrategyFilterList().add(newFilter);
             }
             return strategy;

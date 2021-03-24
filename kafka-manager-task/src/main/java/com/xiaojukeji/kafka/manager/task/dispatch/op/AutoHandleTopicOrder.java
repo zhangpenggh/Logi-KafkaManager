@@ -33,8 +33,8 @@ import java.util.Properties;
  * @author zengqiao
  * @date 20/7/28
  */
-@Component
-@CustomScheduled(name = "autoHandleTopicOrder", cron = "0 0/1 * * * ?", threadNum = 1)
+//@Component
+//@CustomScheduled(name = "autoHandleTopicOrder", cron = "0 0/1 * * * ?", threadNum = 1)
 public class AutoHandleTopicOrder extends AbstractScheduledTask<EmptyEntry> {
     private static final Logger LOGGER = LoggerFactory.getLogger(LogConstant.SCHEDULED_TASK_LOGGER);
 

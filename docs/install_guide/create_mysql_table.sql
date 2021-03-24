@@ -47,7 +47,7 @@ CREATE TABLE `app` (
 CREATE TABLE `alert_strategy` (
   `id` bigint(20) unsigned NOT NULL AUTO_INCREMENT COMMENT '自增id',
   `name` varchar(192) NOT NULL DEFAULT '' COMMENT '名称',
-  `priority` int(16)  DEFAULT '' COMMENT '级别',
+  `priority` int(16)  COMMENT '级别',
   `period_hours_of_day` varchar(64) NOT NULL DEFAULT '' COMMENT '生效时间',
   `period_days_of_week` varchar(64) COMMENT '生效日',
   `strategy_expressions` text COMMENT '报警策略',

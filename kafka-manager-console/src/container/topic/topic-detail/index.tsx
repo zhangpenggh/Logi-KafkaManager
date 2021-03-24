@@ -388,9 +388,6 @@ export class TopicDetail extends React.Component<any> {
                 <TabPane tab="应用信息" key="7">
                   <AppIdInformation />
                 </TabPane>
-                <TabPane tab="账单信息" key="8">
-                  <BillInformation />
-                </TabPane>
               </Tabs>
             </>
             : null

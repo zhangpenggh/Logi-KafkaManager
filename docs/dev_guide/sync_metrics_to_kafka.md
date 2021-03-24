@@ -4,7 +4,7 @@
 
 - 【运维管理】-【平台管理】-【配置管理】中新增配置。 配置键：PRODUCE_CONSUMER_METRICS_CONFIG_KEY 值：
 ```json
-{ "clusterId": 3 , "topicName": "km_consumer_metrics" }
+{ "clusterId": 1 , "topicName": "km_consumer_metrics" }
 
 ```
 - 启动发送任务

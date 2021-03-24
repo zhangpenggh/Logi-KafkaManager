@@ -11,7 +11,10 @@ task:
     sync-topic-enabled: true
 
 ```
-
+- 增加配置项：键：SYNC_TOPIC_2_DB_CONFIG_KEY
+```json
+[ { "defaultAppId": "appId_000001_cn", "clusterId": 1 }, { "defaultAppId": "appId_000001_cn", "clusterId": 2 }, { "defaultAppId": "appId_000001_cn", "clusterId": 3 } ]
+```
 - 启动同步任务: syncTopic2DB
 
 ```bash 
