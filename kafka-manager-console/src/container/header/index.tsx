@@ -68,22 +68,9 @@ export const Header = observer((props: IHeader) => {
     <ul className="kafka-header-menu">
       <li>
         <a
-          href=""
-          target="_blank"
+          href="https://docs.qq.com/doc/DSmVOYkRYd2JYcG55"
         >使用手册
         </a></li>
-      <li>
-        <Popover placement="left" content={content} trigger="hover">
-          <a
-            // tslint:disable-next-line:max-line-length
-            // href="https://github.com/didi/kafka-manager"
-            href="javascript:void(0)"
-            onClick={() => { return false }}
-          // target="_blank"
-          >联系我们
-          </a>
-        </Popover>
-      </li>
     </ul>
   );
 

@@ -2,8 +2,12 @@ package com.xiaojukeji.kafka.manager.service.utils;
 
 import kafka.admin.AclCommand;
 import kafka.admin.ConfigCommand;
+import org.apache.commons.lang.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class KafkaAclUtils {
+    private static final Logger logger = LoggerFactory.getLogger(KafkaAclUtils.class);
 
     public static void assignConsumerByGroup(String zookeeper, String user, String group, String topic) throws Exception {
         String[] args = new String[]{
@@ -17,6 +21,7 @@ public class KafkaAclUtils {
                 "--topic",
                 topic
         };
+        logger.info("消费组授权：" + StringUtils.join(args, " "));
         AclCommand.main(args);
     }
 
@@ -32,8 +37,10 @@ public class KafkaAclUtils {
                 "--resource-pattern-type",
                 "prefixed",
                 "--topic",
-                "crm_db_log"
+                topic
         };
+
+        logger.info("消费组前缀授权：" + StringUtils.join(args, " "));
         AclCommand.main(args);
     }
 
@@ -49,6 +56,7 @@ public class KafkaAclUtils {
                 "--topic",
                 topic
         };
+        logger.info("生产者授权：" + StringUtils.join(args, " "));
         AclCommand.main(args);
     }
 

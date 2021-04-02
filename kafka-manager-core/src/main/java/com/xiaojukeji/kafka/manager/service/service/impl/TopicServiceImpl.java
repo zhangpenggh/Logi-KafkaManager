@@ -574,7 +574,7 @@ public class TopicServiceImpl implements TopicService {
         return null;
     }
 
-    private List<String> fetchTopicData(KafkaConsumer kafkaConsumer, ClusterDO clusterDO, String topicName, TopicDataSampleDTO reqObj) {
+    private List<String> fetchTopicData(KafkaConsumer kafkaConsumer, ClusterDO clusterDO, String topicName, TopicDataSampleDTO reqObj) throws InterruptedException {
         TopicMetadata topicMetadata = PhysicalClusterMetadataManager.getTopicMetadata(clusterDO.getId(), topicName);
         List<TopicPartition> tpList = new ArrayList<>();
         for (int partitionId = 0; partitionId < topicMetadata.getPartitionNum(); ++partitionId) {
@@ -683,7 +683,7 @@ public class TopicServiceImpl implements TopicService {
     public List<String> fetchTopicData(KafkaConsumer kafkaConsumer,
                                        Integer maxMsgNum,
                                        Integer timeout,
-                                       Boolean truncated) {
+                                       Boolean truncated) throws InterruptedException {
         List<String> dataList = new ArrayList<>();
 
         long timestamp = System.currentTimeMillis();
@@ -705,6 +705,7 @@ public class TopicServiceImpl implements TopicService {
                 Thread.sleep(10);
             } catch (Exception e) {
                 LOGGER.error("fetch topic data failed, TopicPartitions:{}.", kafkaConsumer.assignment(), e);
+                throw e;
             }
         }
         return dataList.subList(0, Math.min(dataList.size(), maxMsgNum));

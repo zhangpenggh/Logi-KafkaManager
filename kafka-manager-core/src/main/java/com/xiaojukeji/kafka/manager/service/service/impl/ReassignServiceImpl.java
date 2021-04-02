@@ -313,11 +313,11 @@ public class ReassignServiceImpl implements ReassignService {
                                                                             String reassignmentJson) {
         // 本地迁移Json转Map
         Map<TopicAndPartition, Seq<Object>> reassignMap =
-                JavaConversions.asJavaMap(ZkUtils.parsePartitionReassignmentData(reassignmentJson));
+                JavaConversions.mapAsJavaMap(ZkUtils.parsePartitionReassignmentData(reassignmentJson));
 
         // 从zk获取哪些分区正在迁移
         Set<TopicAndPartition> beingReassignedMap =
-                JavaConversions.asJavaMap(zkUtils.getPartitionsBeingReassigned()).keySet();
+                JavaConversions.mapAsJavaMap(zkUtils.getPartitionsBeingReassigned()).keySet();
 
         // 计算迁移结果
         Map<TopicAndPartition, TaskStatusReassignEnum> reassignResult = new HashMap<>(reassignMap.size());
@@ -327,8 +327,8 @@ public class ReassignServiceImpl implements ReassignService {
                 continue;
             }
             boolean status = ValidateUtils.equalList(
-                    JavaConversions.asJavaList(reassignMap.get(tp)),
-                    JavaConversions.asJavaList(zkUtils.getReplicasForPartition(tp.topic(), tp.partition()))
+                    JavaConversions.seqAsJavaList(reassignMap.get(tp)),
+                    JavaConversions.seqAsJavaList(zkUtils.getReplicasForPartition(tp.topic(), tp.partition()))
             );
             reassignResult.put(tp, status? TaskStatusReassignEnum.SUCCEED: TaskStatusReassignEnum.FAILED);
         }

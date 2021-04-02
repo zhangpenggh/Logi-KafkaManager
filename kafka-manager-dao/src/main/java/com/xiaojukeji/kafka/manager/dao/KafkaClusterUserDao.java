@@ -1,12 +1,8 @@
 package com.xiaojukeji.kafka.manager.dao;
 
 import com.xiaojukeji.kafka.manager.common.entity.pojo.KafkaClusterUserDO;
-import com.xiaojukeji.kafka.manager.common.entity.pojo.gateway.KafkaUserDO;
-import scala.util.parsing.combinator.testing.Str;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * @author zhangpeng

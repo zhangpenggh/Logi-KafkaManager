@@ -19,10 +19,13 @@ import com.xiaojukeji.kafka.manager.service.service.*;
 import com.xiaojukeji.kafka.manager.service.service.gateway.AuthorityService;
 import com.xiaojukeji.kafka.manager.service.utils.KafkaZookeeperUtils;
 import com.xiaojukeji.kafka.manager.service.utils.TopicCommands;
+import kafka.Kafka;
 import kafka.admin.AdminOperationException;
 import kafka.admin.PreferredReplicaLeaderElectionCommand;
 import kafka.utils.ZkUtils;
+import kafka.zk.KafkaZkClient;
 import org.apache.kafka.common.security.JaasUtils;
+import org.apache.kafka.common.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -170,13 +173,12 @@ public class AdminServiceImpl implements AdminService {
 
     @Override
     public ResultStatus preferredReplicaElection(ClusterDO clusterDO, String operator) {
-        ZkUtils zkUtils = null;
+        KafkaZkClient zkUtils = null;
         try {
-            zkUtils = ZkUtils.apply(clusterDO.getZookeeper(),
+            zkUtils = KafkaZkClient.apply(clusterDO.getZookeeper(),
+                    JaasUtils.isZkSecurityEnabled(),
                     Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                    Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                    JaasUtils.isZkSecurityEnabled()
-            );
+                    Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,100, Time.SYSTEM, "kafka.server", "SessionExpireListener");
             PreferredReplicaLeaderElectionCommand command =
                     new PreferredReplicaLeaderElectionCommand(zkUtils, zkUtils.getAllPartitions());
             command.moveLeaderToPreferredReplica();
@@ -242,15 +244,14 @@ public class AdminServiceImpl implements AdminService {
             return ResultStatus.SUCCESS;
         }
 
-        ZkUtils zkUtils = null;
+        KafkaZkClient zkUtils = null;
         try {
             String preferredReplicaElectString = convert2preferredReplicaElectString(partitionMap);
 
-            zkUtils = ZkUtils.apply(clusterDO.getZookeeper(),
+            zkUtils = KafkaZkClient.apply(clusterDO.getZookeeper(),
+                    JaasUtils.isZkSecurityEnabled(),
                     Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                    Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                    JaasUtils.isZkSecurityEnabled()
-            );
+                    Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,100, Time.SYSTEM, "kafka.server", "SessionExpireListener");
             PreferredReplicaLeaderElectionCommand preferredReplicaElectionCommand =
                     new PreferredReplicaLeaderElectionCommand(
                             zkUtils,

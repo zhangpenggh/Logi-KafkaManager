@@ -83,7 +83,7 @@ public interface TopicService {
      * 数据采样
      */
     List<String> fetchTopicData(ClusterDO clusterDO, String topicName, TopicDataSampleDTO reqObj);
-    List<String> fetchTopicData(KafkaConsumer kafkaConsumer, Integer maxMsgNum, Integer timeout, Boolean truncated);
+    List<String> fetchTopicData(KafkaConsumer kafkaConsumer, Integer maxMsgNum, Integer timeout, Boolean truncated) throws InterruptedException;
 
     /**
      * 采样指定分区最新的数据

@@ -97,7 +97,7 @@ public class ThirdPartServiceImpl implements ThirdPartService {
             return null;
         }
         try {
-            return JavaConversions.asJavaMap(client.listGroupOffsets(consumerGroup));
+            return JavaConversions.mapAsJavaMap(client.listGroupOffsets(consumerGroup));
         } catch (Exception e) {
             LOGGER.error("list group offsets failed, clusterId:{}, consumerGroup:{}.", clusterId, consumerGroup, e);
         }

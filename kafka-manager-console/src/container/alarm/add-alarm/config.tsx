@@ -178,7 +178,7 @@ export const xActionFormMap = [{
 },
 {
   key: 'callback',
-  label: '报警地址（企业微信）',
+  label: '报警地址(企业微信)',
   rules: [{ required: false, message: '请输入报警地址(企业微信)' }],
   attrs: { disabled: isDetailPage },
 }] as unknown as IFormSelect[]; // as IFormItem[];

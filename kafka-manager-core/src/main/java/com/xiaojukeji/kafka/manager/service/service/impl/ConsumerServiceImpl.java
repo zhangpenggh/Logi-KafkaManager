@@ -123,7 +123,7 @@ public class ConsumerServiceImpl implements ConsumerService {
         try {
             AdminClient adminClient = KafkaClientPool.getAdminClient(clusterId);
 
-            AdminClient.ConsumerGroupSummary consumerGroupSummary = adminClient.describeConsumerGroup(consumerGroup);
+            AdminClient.ConsumerGroupSummary consumerGroupSummary = adminClient.describeConsumerGroup(consumerGroup, 10000);
             if (ValidateUtils.isNull(consumerGroupSummary)) {
                 return summary;
             }
@@ -131,9 +131,9 @@ public class ConsumerServiceImpl implements ConsumerService {
 
             Iterator<scala.collection.immutable.List<AdminClient.ConsumerSummary>> it = JavaConversions.asJavaIterator(consumerGroupSummary.consumers().iterator());
             while (it.hasNext()) {
-                List<AdminClient.ConsumerSummary> consumerSummaryList = JavaConversions.asJavaList(it.next());
+                List<AdminClient.ConsumerSummary> consumerSummaryList = JavaConversions.seqAsJavaList(it.next());
                 for (AdminClient.ConsumerSummary consumerSummary: consumerSummaryList) {
-                    List<TopicPartition> topicPartitionList = JavaConversions.asJavaList(consumerSummary.assignment());
+                    List<TopicPartition> topicPartitionList = JavaConversions.seqAsJavaList(consumerSummary.assignment());
                     if (ValidateUtils.isEmptyList(topicPartitionList)) {
                         continue;
                     }
@@ -340,10 +340,10 @@ public class ConsumerServiceImpl implements ConsumerService {
             return new HashMap<>(0);
         }
         Map<Integer, String> consumerIdMap = new HashMap<>();
-        for (scala.collection.immutable.List<AdminClient.ConsumerSummary> scalaSubConsumerSummaryList: JavaConversions.asJavaList(consumerGroupSummary.consumers().toList())) {
-            List<AdminClient.ConsumerSummary> subConsumerSummaryList = JavaConversions.asJavaList(scalaSubConsumerSummaryList);
+        for (scala.collection.immutable.List<AdminClient.ConsumerSummary> scalaSubConsumerSummaryList: JavaConversions.seqAsJavaList(consumerGroupSummary.consumers().toList())) {
+            List<AdminClient.ConsumerSummary> subConsumerSummaryList = JavaConversions.seqAsJavaList(scalaSubConsumerSummaryList);
             for (AdminClient.ConsumerSummary consumerSummary: subConsumerSummaryList) {
-                for (TopicPartition tp: JavaConversions.asJavaList(consumerSummary.assignment())) {
+                for (TopicPartition tp: JavaConversions.seqAsJavaList(consumerSummary.assignment())) {
                     if (!tp.topic().equals(topicName)) {
                         continue;
                     }
@@ -417,7 +417,7 @@ public class ConsumerServiceImpl implements ConsumerService {
         if (null == client) {
             return result;
         }
-        Map<TopicPartition, Object> offsetMap = JavaConversions.asJavaMap(client.listGroupOffsets(consumerGroup));
+        Map<TopicPartition, Object> offsetMap = JavaConversions.mapAsJavaMap(client.listGroupOffsets(consumerGroup));
         for (Map.Entry<TopicPartition, Object> entry : offsetMap.entrySet()) {
             TopicPartition topicPartition = entry.getKey();
             if (topicPartition.topic().equals(topicName)) {

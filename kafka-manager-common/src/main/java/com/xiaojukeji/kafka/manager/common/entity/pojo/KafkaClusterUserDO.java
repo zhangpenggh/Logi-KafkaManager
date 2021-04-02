@@ -11,7 +11,7 @@ public class KafkaClusterUserDO {
 
     private String appId;
 
-    private String clusterId;
+    private Long clusterId;
 
     private String password;
 
@@ -61,11 +61,11 @@ public class KafkaClusterUserDO {
                 '}';
     }
 
-    public String getClusterId() {
+    public Long getClusterId() {
         return clusterId;
     }
 
-    public void setClusterId(String clusterId) {
+    public void setClusterId(Long clusterId) {
         this.clusterId = clusterId;
     }
 }

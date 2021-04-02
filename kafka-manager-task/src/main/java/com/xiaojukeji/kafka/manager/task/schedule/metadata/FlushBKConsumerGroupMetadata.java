@@ -2,8 +2,8 @@ package com.xiaojukeji.kafka.manager.task.schedule.metadata;
 
 import com.xiaojukeji.kafka.manager.common.constant.LogConstant;
 import com.xiaojukeji.kafka.manager.common.entity.ConsumerMetadata;
-import com.xiaojukeji.kafka.manager.common.utils.ValidateUtils;
 import com.xiaojukeji.kafka.manager.common.entity.pojo.ClusterDO;
+import com.xiaojukeji.kafka.manager.common.utils.ValidateUtils;
 import com.xiaojukeji.kafka.manager.service.cache.ConsumerMetadataCache;
 import com.xiaojukeji.kafka.manager.service.cache.KafkaClientPool;
 import com.xiaojukeji.kafka.manager.service.service.ClusterService;
@@ -75,10 +75,10 @@ public class FlushBKConsumerGroupMetadata {
         try {
             AdminClient adminClient = KafkaClientPool.getAdminClient(clusterId);
 
-            scala.collection.immutable.Map<org.apache.kafka.common.Node, scala.collection.immutable.List<kafka.coordinator.GroupOverview>> brokerGroupMap = adminClient.listAllGroups();
-            for (scala.collection.immutable.List<kafka.coordinator.GroupOverview> brokerGroup : JavaConversions.asJavaMap(brokerGroupMap).values()) {
-                List<kafka.coordinator.GroupOverview> lists = JavaConversions.asJavaList(brokerGroup);
-                for (kafka.coordinator.GroupOverview groupOverview : lists) {
+            scala.collection.immutable.Map<org.apache.kafka.common.Node, scala.collection.immutable.List<kafka.coordinator.group.GroupOverview>> brokerGroupMap = adminClient.listAllGroups();
+            for (scala.collection.immutable.List<kafka.coordinator.group.GroupOverview> brokerGroup : JavaConversions.mapAsJavaMap(brokerGroupMap).values()) {
+                List<kafka.coordinator.group.GroupOverview> lists = JavaConversions.seqAsJavaList(brokerGroup);
+                for (kafka.coordinator.group.GroupOverview groupOverview : lists) {
                     String consumerGroup = groupOverview.groupId();
                     if (consumerGroup != null && consumerGroup.contains("#")) {
                         String[] splitArray = consumerGroup.split("#");
@@ -103,7 +103,7 @@ public class FlushBKConsumerGroupMetadata {
         Map<String, AdminClient.ConsumerGroupSummary> consumerGroupSummaryMap = new HashMap<>();
         for (String consumerGroup : consumerGroupSet) {
             try {
-                AdminClient.ConsumerGroupSummary consumerGroupSummary = adminClient.describeConsumerGroup(consumerGroup);
+                AdminClient.ConsumerGroupSummary consumerGroupSummary = adminClient.describeConsumerGroup(consumerGroup, 60000);
                 if (consumerGroupSummary == null) {
                     continue;
                 }
@@ -112,9 +112,9 @@ public class FlushBKConsumerGroupMetadata {
                 java.util.Iterator<scala.collection.immutable.List<AdminClient.ConsumerSummary>> it =
                         JavaConversions.asJavaIterator(consumerGroupSummary.consumers().iterator());
                 while (it.hasNext()) {
-                    List<AdminClient.ConsumerSummary> consumerSummaryList = JavaConversions.asJavaList(it.next());
+                    List<AdminClient.ConsumerSummary> consumerSummaryList = JavaConversions.seqAsJavaList(it.next());
                     for (AdminClient.ConsumerSummary consumerSummary: consumerSummaryList) {
-                        List<TopicPartition> topicPartitionList = JavaConversions.asJavaList(consumerSummary.assignment());
+                        List<TopicPartition> topicPartitionList = JavaConversions.seqAsJavaList(consumerSummary.assignment());
                         if (topicPartitionList == null) {
                             continue;
                         }
@@ -144,7 +144,7 @@ public class FlushBKConsumerGroupMetadata {
 
         for (String consumerGroup: consumerGroupSet) {
             try {
-                Map<TopicPartition, Object> topicPartitionAndOffsetMap = JavaConversions.asJavaMap(adminClient.listGroupOffsets(consumerGroup));
+                Map<TopicPartition, Object> topicPartitionAndOffsetMap = JavaConversions.mapAsJavaMap(adminClient.listGroupOffsets(consumerGroup));
                 for (Map.Entry<TopicPartition, Object> entry : topicPartitionAndOffsetMap.entrySet()) {
                     TopicPartition tp = entry.getKey();
                     Set<String> subConsumerGroupSet = topicNameConsumerGroupMap.getOrDefault(tp.topic(), new HashSet<>());

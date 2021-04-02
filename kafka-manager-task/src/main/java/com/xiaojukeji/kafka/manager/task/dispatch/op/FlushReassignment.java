@@ -20,11 +20,14 @@ import com.xiaojukeji.kafka.manager.task.component.EmptyEntry;
 import kafka.admin.ReassignPartitionsCommand;
 import kafka.common.TopicAndPartition;
 import kafka.utils.ZkUtils;
+import kafka.zk.KafkaZkClient;
 import org.apache.kafka.common.security.JaasUtils;
+import org.apache.kafka.common.utils.Time;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+import scala.Option;
 
 import java.util.*;
 
@@ -105,73 +108,75 @@ public class FlushReassignment extends AbstractScheduledTask<EmptyEntry> {
     }
 
     private void modifyRunning(List<ReassignTaskDO> subDOList) {
-        if (ValidateUtils.isEmptyList(subDOList)) {
-            return;
-        }
-
-        for (ReassignTaskDO elem: subDOList) {
-            if (!TaskStatusReassignEnum.RUNNING.getCode().equals(elem.getStatus())) {
-                continue;
-            }
-
-            ZkUtils zkUtils = null;
-            try {
-                ClusterDO clusterDO = clusterService.getById(elem.getClusterId());
-                if (ValidateUtils.isNull(clusterDO)) {
-                    continue;
-                }
-
-                zkUtils = ZkUtils.apply(clusterDO.getZookeeper(),
-                        Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                        Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
-                        JaasUtils.isZkSecurityEnabled());
-
-                Map<TopicAndPartition, TaskStatusReassignEnum> statusMap =
-                        reassignService.verifyAssignment(zkUtils, elem.getReassignmentJson());
-                if (ValidateUtils.isNull(statusMap)) {
-                    return;
-                }
-
-                Set<TaskStatusReassignEnum> statusSet = new HashSet<>();
-                for (Map.Entry<TopicAndPartition, TaskStatusReassignEnum> entry: statusMap.entrySet()) {
-                    statusSet.add(entry.getValue());
-                }
-                if (statusSet.contains(TaskStatusReassignEnum.RUNNING)) {
-                    // 迁移任务未完成, 则执行限流, 并结束调用
-                    ReassignPartitionsCommand.executeAssignment(
-                            zkUtils,
-                            elem.getReassignmentJson(),
-                            elem.getRealThrottle()
-                    );
-                    return;
-                }
-
-                // 迁移任务已经完成
-                ReassignPartitionsCommand.verifyAssignment(zkUtils, elem.getReassignmentJson());
-
-                Thread.sleep(10000);
-
-                // 恢复Topic保存时间
-                changeTopicRetentionTime(clusterDO, elem.getTopicName(), elem.getOriginalRetentionTime());
-
-                if (statusSet.contains(TaskStatusReassignEnum.FAILED)) {
-                    elem.setStatus(TaskStatusReassignEnum.FAILED.getCode());
-                } else {
-                    elem.setStatus(TaskStatusReassignEnum.SUCCEED.getCode());
-                }
-                if (reassignTaskDao.updateById(elem) < 1) {
-                    LOGGER.error("modify mysql failed, task:{}.", elem);
-                    return;
-                }
-            } catch (Exception e) {
-                LOGGER.error("modify running failed, task:{}.", elem, e);
-            } finally {
-                if (zkUtils != null) {
-                    zkUtils.close();
-                }
-                zkUtils = null;
-            }
-        }
+//        if (ValidateUtils.isEmptyList(subDOList)) {
+//            return;
+//        }
+//
+//        for (ReassignTaskDO elem: subDOList) {
+//            if (!TaskStatusReassignEnum.RUNNING.getCode().equals(elem.getStatus())) {
+//                continue;
+//            }
+//
+//            KafkaZkClient zkUtils = null;
+//            try {
+//                ClusterDO clusterDO = clusterService.getById(elem.getClusterId());
+//                if (ValidateUtils.isNull(clusterDO)) {
+//                    continue;
+//                }
+//
+//                zkUtils = KafkaZkClient.apply(clusterDO.getZookeeper(),
+//                        JaasUtils.isZkSecurityEnabled(),
+//                        Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,
+//                        Constant.DEFAULT_SESSION_TIMEOUT_UNIT_MS,100, Time.SYSTEM, "kafka.server", "SessionExpireListener");
+//
+//                Map<TopicAndPartition, TaskStatusReassignEnum> statusMap =
+//                        reassignService.verifyAssignment(zkUtils, elem.getReassignmentJson());
+//                if (ValidateUtils.isNull(statusMap)) {
+//                    return;
+//                }
+//
+//                Set<TaskStatusReassignEnum> statusSet = new HashSet<>();
+//                for (Map.Entry<TopicAndPartition, TaskStatusReassignEnum> entry: statusMap.entrySet()) {
+//                    statusSet.add(entry.getValue());
+//                }
+//                if (statusSet.contains(TaskStatusReassignEnum.RUNNING)) {
+//                    // 迁移任务未完成, 则执行限流, 并结束调用
+//                    ReassignPartitionsCommand.executeAssignment(
+//                            zkUtils,
+//                            Option.empty(),
+//                            elem.getReassignmentJson(),
+//                            ReassignPartitionsCommand.NoThrottle(),
+//                            60000
+//                    );
+//                    return;
+//                }
+//
+//                // 迁移任务已经完成
+////                ReassignPartitionsCommand.verifyAssignment(zkUtils, elem.getReassignmentJson());
+//
+//                Thread.sleep(10000);
+//
+//                // 恢复Topic保存时间
+//                changeTopicRetentionTime(clusterDO, elem.getTopicName(), elem.getOriginalRetentionTime());
+//
+//                if (statusSet.contains(TaskStatusReassignEnum.FAILED)) {
+//                    elem.setStatus(TaskStatusReassignEnum.FAILED.getCode());
+//                } else {
+//                    elem.setStatus(TaskStatusReassignEnum.SUCCEED.getCode());
+//                }
+//                if (reassignTaskDao.updateById(elem) < 1) {
+//                    LOGGER.error("modify mysql failed, task:{}.", elem);
+//                    return;
+//                }
+//            } catch (Exception e) {
+//                LOGGER.error("modify running failed, task:{}.", elem, e);
+//            } finally {
+//                if (zkUtils != null) {
+//                    zkUtils.close();
+//                }
+//                zkUtils = null;
+//            }
+//        }
     }
 
     private boolean startRunnable(List<ReassignTaskDO> subDOList) {
@@ -207,11 +212,11 @@ public class FlushReassignment extends AbstractScheduledTask<EmptyEntry> {
                 changeTopicRetentionTime(clusterDO, elem.getTopicName(), elem.getReassignRetentionTime());
 
                 // 启动Topic迁移
-                ReassignPartitionsCommand.executeAssignment(
-                        zkUtils,
-                        elem.getReassignmentJson(),
-                        elem.getRealThrottle()
-                );
+//                ReassignPartitionsCommand.executeAssignment(
+//                        zkUtils,
+//                        elem.getReassignmentJson(),
+//                        elem.getRealThrottle()
+//                );
             } catch (Throwable t) {
                 LOGGER.error("execute assignment failed, task:{}.", elem, t);
                 return false;

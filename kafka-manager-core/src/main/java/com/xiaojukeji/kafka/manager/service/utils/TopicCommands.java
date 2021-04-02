@@ -167,7 +167,7 @@ public class TopicCommands {
 
 
             // 新增分区的分配策略
-            Map<Object, Seq<Object>> newAssignMap = JavaConversions.asJavaMap(
+            Map<Object, Seq<Object>> newAssignMap = JavaConversions.mapAsJavaMap(
                     AdminUtils.assignReplicasToBrokers(
                             convert2BrokerMetadataSeq(brokerIdList),
                             partitionNum,
@@ -178,7 +178,7 @@ public class TopicCommands {
             );
 
             Map<TopicAndPartition, Seq<Object>> existingAssignJavaMap =
-                    JavaConversions.asJavaMap(existingAssignScalaMap);
+                    JavaConversions.mapAsJavaMap(existingAssignScalaMap);
             // 新增分区的分配策略和旧的分配策略合并
             Map<Object, Seq<Object>> targetMap = new HashMap<>();
             for (Map.Entry<TopicAndPartition, Seq<Object>> entry : existingAssignJavaMap.entrySet()) {
@@ -192,7 +192,7 @@ public class TopicCommands {
             AdminUtils.createOrUpdateTopicPartitionAssignmentPathInZK(
                     zkUtils,
                     topicName,
-                    JavaConversions.asScalaMap(targetMap),
+                    JavaConversions.mapAsScalaMap(targetMap),
                     null,
                     true
             );

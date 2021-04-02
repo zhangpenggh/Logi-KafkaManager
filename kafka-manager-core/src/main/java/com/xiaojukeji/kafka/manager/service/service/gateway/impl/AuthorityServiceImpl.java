@@ -31,10 +31,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * @author zhongyuankai
@@ -84,35 +81,57 @@ public class AuthorityServiceImpl implements AuthorityService {
             if (authorityDao.insert(authorityDO) < 1) {
                 return result;
             }
+            LOGGER.info("写入Authority成功！");
             Long physicalClusterId = authorityDO.getClusterId();
             ClusterDO clusterDO = PhysicalClusterMetadataManager.getClusterFromCache(physicalClusterId);
             if (StringUtils.isNotEmpty(clusterDO.getSecurityProperties())) {
-
+                LOGGER.info("加密集群");
                 AppDO appDO = appDao.getByAppId(authorityDO.getAppId());
                 List<KafkaClusterUserDO> kafkaClusterUserDOList = kafkaClusterUserDao.selectByAppCluster(physicalClusterId, appDO.getAppId());
+
+                LOGGER.info("查找集群用户创建记录成功！");
                 if (CollectionUtils.isEmpty(kafkaClusterUserDOList)) {
+                    LOGGER.info("用户未曾创建，新创建用户：" + appDO.getAppId());
                     KafkaAclUtils.createUser(clusterDO.getZookeeper(), appDO.getAppId(), appDO.getPassword());
+                    LOGGER.info("用户创建成功，开始写入创建记录");
+                    KafkaClusterUserDO clusterUserDO = new KafkaClusterUserDO();
+                    clusterUserDO.setAppId(appDO.getAppId());
+                    clusterUserDO.setClusterId(physicalClusterId);
+                    clusterUserDO.setPassword(appDO.getPassword());
+                    clusterUserDO.setCreateTime(new Date());
+                    kafkaClusterUserDao.insert(clusterUserDO);
+                    LOGGER.info("写入创建记录成功！");
                 }
                 String appProperties = appDO.getProperties();
-                if (StringUtils.isNotEmpty(appProperties)) {
-                    AppPropertiesDO appPropertiesDO = JSONObject.parseObject(appProperties, AppPropertiesDO.class);
-                    if (authorityDO.getAccess() == TopicAuthorityEnum.READ.getCode() || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
+                if (authorityDO.getAccess() == TopicAuthorityEnum.READ.getCode()
+                        || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
+
+                    if (StringUtils.isNotEmpty(appProperties)) {
+                        LOGGER.info("满足读授权条件，开始授权");
+                        AppPropertiesDO appPropertiesDO = JSONObject.parseObject(appProperties, AppPropertiesDO.class);
                         if (StringUtils.isNotEmpty(appPropertiesDO.getGroup())) {
-                            KafkaAclUtils.assignConsumerByGroup(clusterDO.getZookeeper(), appDO.getAppId(), appPropertiesDO.getGroup(), authorityDO.getTopicName());
+                            KafkaAclUtils.assignConsumerByGroup(clusterDO.getZookeeper(),
+                                    appDO.getAppId(),
+                                    appPropertiesDO.getGroup(),
+                                    authorityDO.getTopicName());
+                            LOGGER.info("group读授权完成");
                         }
                         if (StringUtils.isNotEmpty(appPropertiesDO.getGroupPrefix())) {
                             KafkaAclUtils.assignConsumerByGroupPrefix(clusterDO.getZookeeper(),
                                     appDO.getAppId(),
                                     appPropertiesDO.getGroupPrefix(),
                                     authorityDO.getTopicName());
+                            LOGGER.info("group前缀读授权完成");
                         }
                     }
-                    if (authorityDO.getAccess() == TopicAuthorityEnum.WRITE.getCode() || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
-                        KafkaAclUtils.assignProducer(clusterDO.getZookeeper(), appDO.getAppId(), authorityDO.getTopicName());
-                    }
                 }
-
+                if (authorityDO.getAccess() == TopicAuthorityEnum.WRITE.getCode() || authorityDO.getAccess() == TopicAuthorityEnum.READ_WRITE.getCode()) {
+                    LOGGER.info("满足写授权条件，开始授权");
+                    KafkaAclUtils.assignProducer(clusterDO.getZookeeper(), appDO.getAppId(), authorityDO.getTopicName());
+                    LOGGER.info("写授权完成");
+                }
             }
+
             KafkaAclDO kafkaAclDO = new KafkaAclDO();
             kafkaAclDO.setTopicName(authorityDO.getTopicName());
             kafkaAclDO.setClusterId(authorityDO.getClusterId());
@@ -140,6 +159,7 @@ public class AuthorityServiceImpl implements AuthorityService {
 
         int newAccess = authorityDO.getAccess() ^ access;
         authorityDO.setAccess(newAccess);
+        LOGGER.info("获取权限成功");
         try {
             if (authorityDao.insert(authorityDO) < 1) {
                 return ResultStatus.OPERATION_FAILED;
@@ -156,6 +176,7 @@ public class AuthorityServiceImpl implements AuthorityService {
                 return ResultStatus.OPERATION_FAILED;
             }
 
+            LOGGER.info("写入ACL成功！");
             // 记录操作
             Map<String, Object> content = new HashMap<>(4);
             content.put("clusterId", clusterId);

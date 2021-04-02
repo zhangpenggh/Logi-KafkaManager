@@ -168,43 +168,46 @@ public class OrderServiceImpl implements OrderService {
     @Override
     public List<OrderDO> getWaitApprovalList(String userName) {
         List<OrderDO> orderList = new ArrayList<>();
-        List<AppDO> appDOList = new ArrayList<>();
-        try {
-            orderList = orderStorageService.getByStatus(OrderStatusEnum.WAIT_DEAL.getCode());
-            appDOList = appService.getByPrincipal(userName);
-        } catch (Exception e) {
-            LOGGER.error("get wait approval list failed, userName:{}.", userName, e);
-        }
-        Set<String> appIdSet = appDOList.stream().map(appDO -> appDO.getAppId()).collect(Collectors.toSet());
+//        List<AppDO> appDOList = new ArrayList<>();
         boolean isAdmin = accountService.isAdminOrderHandler(userName);
-        Map<Long, Map<String, TopicDO>> topicMap = new HashMap<>();
-        orderList = orderList.stream().filter((orderDO) -> {
-            if (!OrderTypeEnum.APPLY_AUTHORITY.getCode().equals(orderDO.getType())) {
-                return isAdmin;
-            }
+        if (isAdmin) {
             try {
-                OrderExtensionAuthorityDTO orderExtension = JSONObject.parseObject(
-                        orderDO.getExtensions(),
-                        OrderExtensionAuthorityDTO.class
-                );
-                Long physicalClusterId = logicalClusterMetadataManager.getPhysicalClusterId(
-                        orderExtension.getClusterId(),
-                        orderExtension.isPhysicalClusterId()
-                );
-                TopicDO topicDO = getTopicDOFromCacheOrDB(
-                        physicalClusterId,
-                        orderExtension.getTopicName(),
-                        topicMap
-                );
-                if (ValidateUtils.isNull(topicDO)) {
-                    return false;
-                }
-                return appIdSet.contains(topicDO.getAppId());
+                orderList = orderStorageService.getByStatus(OrderStatusEnum.WAIT_DEAL.getCode());
+//                appDOList = appService.getByPrincipal(userName);
             } catch (Exception e) {
-                LOGGER.error("parse json failed, extensions:{}.", orderDO.getExtensions(), e);
+                LOGGER.error("get wait approval list failed, userName:{}.", userName, e);
             }
-            return false;
-        }).collect(Collectors.toList());
+        }
+//        Set<String> appIdSet = appDOList.stream().map(appDO -> appDO.getAppId()).collect(Collectors.toSet());
+
+//        Map<Long, Map<String, TopicDO>> topicMap = new HashMap<>();
+//        orderList = orderList.stream().filter((orderDO) -> {
+//            if (!OrderTypeEnum.APPLY_AUTHORITY.getCode().equals(orderDO.getType())) {
+//                return isAdmin;
+//            }
+//            try {
+//                OrderExtensionAuthorityDTO orderExtension = JSONObject.parseObject(
+//                        orderDO.getExtensions(),
+//                        OrderExtensionAuthorityDTO.class
+//                );
+//                Long physicalClusterId = logicalClusterMetadataManager.getPhysicalClusterId(
+//                        orderExtension.getClusterId(),
+//                        orderExtension.isPhysicalClusterId()
+//                );
+//                TopicDO topicDO = getTopicDOFromCacheOrDB(
+//                        physicalClusterId,
+//                        orderExtension.getTopicName(),
+//                        topicMap
+//                );
+//                if (ValidateUtils.isNull(topicDO)) {
+//                    return false;
+//                }
+//                return appIdSet.contains(topicDO.getAppId());
+//            } catch (Exception e) {
+//                LOGGER.error("parse json failed, extensions:{}.", orderDO.getExtensions(), e);
+//            }
+//            return false;
+//        }).collect(Collectors.toList());
         return orderList;
     }
 
