@@ -12,7 +12,7 @@
         <result property="gmtModify"    column="gmt_modify" />
     </resultMap>
 
-    <insert id="insert" parameterType="com.xiaojukeji.kafka.manager.common.entity.pojo.AccountDO">
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id" parameterType="com.xiaojukeji.kafka.manager.common.entity.pojo.AccountDO">
         <![CDATA[
         REPLACE account
         (username, password, role)
